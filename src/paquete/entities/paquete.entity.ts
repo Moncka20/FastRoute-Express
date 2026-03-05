@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { EnvioEntity } from '../../envio/entities/envio.entity';
 
-@Entity()
+@Entity({name: 'Paquete'})
 export class PaqueteEntity {
 
   @PrimaryGeneratedColumn()
@@ -10,6 +10,6 @@ export class PaqueteEntity {
   @Column('decimal')
   peso: number;
 
-  @ManyToOne(() => EnvioEntity, envio => envio.paquetes, { onDelete: 'CASCADE' })
+  @ManyToOne(() => EnvioEntity, envio => envio.paquetes)
   envio: EnvioEntity;
 }

@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { EnvioEntity } from '../../envio/entities/envio.entity';
 
-@Entity()
+@Entity({name: 'Conductor'})
 export class ConductorEntity {
 
   @PrimaryGeneratedColumn()
@@ -14,4 +15,7 @@ export class ConductorEntity {
 
   @Column()
   telefono: string;
+
+  @OneToMany(() => EnvioEntity, envio => envio.conductor)
+  envios: EnvioEntity[];
 }

@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { EnvioEntity } from "../../envio/entities/envio.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { EnvioEntity } from '../../envio/entities/envio.entity';
 
-@Entity()
+@Entity({ name: 'Sucursal' })
 export class SucursalEntity {
 
   @PrimaryGeneratedColumn()
@@ -16,6 +16,6 @@ export class SucursalEntity {
   @Column()
   ciudad: string;
 
-  @OneToMany(() => EnvioEntity, (envio) => envio.envio)
+  @OneToMany(() => EnvioEntity, envio => envio.sucursal)
   envios: EnvioEntity[];
 }

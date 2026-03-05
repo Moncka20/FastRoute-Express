@@ -3,22 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Repository } from 'typeorm';
-import { clienteEntity } from './entities/cliente.entity';
+import { ClienteEntity } from './entities/cliente.entity';
 
 @Injectable()
 export class ClientesService {
     constructor(
-        @InjectRepository(clienteEntity)
-        private readonly clienteRepository: Repository<clienteEntity>,
+        @InjectRepository(ClienteEntity)
+        private readonly clienteRepository: Repository<ClienteEntity>,
     ) { }
 
 
-    async findAll(): Promise<clienteEntity[]> {
+    async findAll(): Promise<ClienteEntity[]> {
         const clientes =  await this.clienteRepository.find();
         return clientes;
     }
 
-    async findOne(id: number): Promise<clienteEntity> {
+    async findOne(id: number): Promise<ClienteEntity> {
         const cliente = await this.clienteRepository.findOne(
             {
                 where: { id },
@@ -31,7 +31,7 @@ export class ClientesService {
         return cliente;
     }
 
-    async create(createClienteDto: CreateClienteDto): Promise<clienteEntity> {
+    async create(createClienteDto: CreateClienteDto): Promise<ClienteEntity> {
         const cliente = this.clienteRepository.create({
             nombre: createClienteDto.nombre,
             correo: createClienteDto.correo,
@@ -40,7 +40,7 @@ export class ClientesService {
         return await this.clienteRepository.save(cliente);
     }
 
-    async update(p0: number, updateClienteDto: UpdateClienteDto): Promise<clienteEntity>{
+    async update(updateClienteDto: UpdateClienteDto): Promise<ClienteEntity>{
       const cliente = this.clienteRepository.create({
         nombre: updateClienteDto.nombre,
         correo: updateClienteDto.correo,

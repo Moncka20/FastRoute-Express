@@ -7,7 +7,7 @@ import { ConductorModule } from './conductor/conductor.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConductorEntity } from './conductor/entities/conductor.entity';
-import { clienteEntity } from './cliente/entities/cliente.entity';
+import { ClienteEntity } from './cliente/entities/cliente.entity';
 import { EnvioEntity } from './envio/entities/envio.entity';
 import { EnvioModule } from './envio/envio.module';
 import { PaqueteModule } from './paquete/paquete.module';
@@ -16,7 +16,7 @@ import { SucursalModule } from './sucursal/sucursal.module';
 import { SucursalEntity } from './sucursal/entities/sucursal.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ConductorEntity, clienteEntity, EnvioEntity, PaqueteEntity, SucursalEntity]),
+  imports: [TypeOrmModule.forFeature([ConductorEntity, ClienteEntity, EnvioEntity, PaqueteEntity, SucursalEntity]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',

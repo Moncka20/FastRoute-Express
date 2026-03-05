@@ -21,7 +21,7 @@ export class ClienteController {
   }
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return await this.clienteService.update(+id, updateClienteDto);
+    return await this.clienteService.update(updateClienteDto);
   }
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {

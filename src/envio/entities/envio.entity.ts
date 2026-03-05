@@ -1,27 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
-import { clienteEntity } from '../../cliente/entities/cliente.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany
+} from 'typeorm';
 
-@Entity({name: 'envios'})
+import { ClienteEntity } from '../../cliente/entities/cliente.entity';
+import { ConductorEntity } from '../../conductor/entities/conductor.entity';
+import { SucursalEntity } from '../../sucursal/entities/sucursal.entity';
+import { PaqueteEntity } from '../../paquete/entities/paquete.entity';
+
+@Entity({name: 'Envio'})
 export class EnvioEntity {
 
   @PrimaryGeneratedColumn()
   id: number;
 
-  @CreateDateColumn({ type: 'timestamp', name: 'fecha_creacion' })
-    fechaCreacion: Date;
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP'
+  })
+  fecha_creacion: Date;
 
-  @Column({ type: 'decimal', default: 0 })
-  costoTotal: number;
-  
-  @Column({ type: 'json', nullable: true })
-  paquetes: any[];
+  @Column('decimal', { default: 0 })
+  costo_total: number;
 
-  @OneToMany(() => clienteEntity, cliente => cliente.envios)
-  cliente: clienteEntity;
+  @ManyToOne(() => ClienteEntity, cliente => cliente.envios)
+  cliente: ClienteEntity;
 
-  @ManyToOne(() => clienteEntity, cliente => cliente.envios)
-  clienteId: number;
+  @ManyToOne(() => ConductorEntity, conductor => conductor.envios)
+  conductor: ConductorEntity;
 
-  @ManyToOne(() => clienteEntity, cliente => cliente.envios)
-  envio: EnvioEntity[];
+  @ManyToOne(() => SucursalEntity, sucursal => sucursal.envios)
+  sucursal: SucursalEntity;
+
+  @OneToMany(() => PaqueteEntity, paquete => paquete.envio)
+  paquetes: PaqueteEntity[];
 }
