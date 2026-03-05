@@ -5,30 +5,34 @@ import { UpdatePaqueteDto } from './dto/update-paquete.dto';
 
 @Controller('paquete')
 export class PaqueteController {
+
   constructor(private readonly paqueteService: PaqueteService) {}
 
   @Post()
-  create(@Body() createPaqueteDto: CreatePaqueteDto) {
-    return this.paqueteService.create(createPaqueteDto);
+  async create(@Body() createPaqueteDto: CreatePaqueteDto) {
+    return await this.paqueteService.create(createPaqueteDto);
   }
 
   @Get()
-  findAll() {
-    return this.paqueteService.findAll();
+  async findAll() {
+    return await this.paqueteService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paqueteService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.paqueteService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaqueteDto: UpdatePaqueteDto) {
-    return this.paqueteService.update(+id, updatePaqueteDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updatePaqueteDto: UpdatePaqueteDto,
+  ) {
+    return await this.paqueteService.update(+id, updatePaqueteDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paqueteService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.paqueteService.remove(+id);
   }
 }

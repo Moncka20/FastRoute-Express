@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { clienteEntity } from '../../cliente/entities/cliente.entity';
 
 @Entity({name: 'envios'})
@@ -16,12 +16,12 @@ export class EnvioEntity {
   @Column({ type: 'json', nullable: true })
   paquetes: any[];
 
-  @Column({ nullable: true })
-  sucursalOrigen: string;
-
-  @Column({ nullable: true })
-  sucursalDestino: string;
+  @OneToMany(() => clienteEntity, cliente => cliente.envios)
+  cliente: clienteEntity;
 
   @ManyToOne(() => clienteEntity, cliente => cliente.envios)
   clienteId: number;
+
+  @ManyToOne(() => clienteEntity, cliente => cliente.envios)
+  envio: EnvioEntity[];
 }

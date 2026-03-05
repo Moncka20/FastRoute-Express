@@ -1,34 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ClienteService } from './cliente.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { ClientesService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 
 @Controller('cliente')
 export class ClienteController {
-  constructor(private readonly clienteService: ClienteService) {}
+  constructor(private readonly clienteService: ClientesService) {}
 
   @Post()
-  create(@Body() createClienteDto: CreateClienteDto) {
-    return this.clienteService.create(createClienteDto);
+  async create(@Body() createClienteDto: CreateClienteDto) {
+    return await this.clienteService.create(createClienteDto);
   }
-
   @Get()
-  findAll() {
-    return this.clienteService.findAll();
+  async findAll() {
+    return await this.clienteService.findAll();
   }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clienteService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.clienteService.findOne(+id);
   }
-
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return this.clienteService.update(+id, updateClienteDto);
+  async update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
+    return await this.clienteService.update(+id, updateClienteDto);
   }
-
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clienteService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.clienteService.delete(id);
   }
-}
+  }     
+

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({name: 'conductores'})
+@Entity()
 export class ConductorEntity {
 
   @PrimaryGeneratedColumn()

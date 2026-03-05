@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { EnvioService } from './envio.service';
 import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
 
-@Controller('envio')
-export class EnvioController {
+@Controller('envios')
+export class envioController {
+
   constructor(private readonly envioService: EnvioService) {}
 
   @Post()
@@ -18,17 +19,20 @@ export class EnvioController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.envioService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.envioService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEnvioDto: UpdateEnvioDto) {
-    return this.envioService.update(+id, updateEnvioDto);
+  @Put(':id')
+  update(
+    @Param('id') id: number,
+    @Body() updateEnvioDto: UpdateEnvioDto,
+  ) {
+    return this.envioService.update(id, updateEnvioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.envioService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.envioService.remove(id);
   }
 }

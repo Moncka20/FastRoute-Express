@@ -40,7 +40,7 @@ export class ClientesService {
         return await this.clienteRepository.save(cliente);
     }
 
-    async update(updateClienteDto: UpdateClienteDto): Promise<clienteEntity>{
+    async update(p0: number, updateClienteDto: UpdateClienteDto): Promise<clienteEntity>{
       const cliente = this.clienteRepository.create({
         nombre: updateClienteDto.nombre,
         correo: updateClienteDto.correo,
@@ -52,5 +52,13 @@ export class ClientesService {
         throw new NotFoundException(`Cliente con ID ${updateClienteDto.id} no encontrado`);
       }
       return updatedCliente;
+    }
+
+    async delete(id: number): Promise<void> {
+        const result = await this.clienteRepository.delete(id);
+        if (result.affected === 0) {  
+            throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+        }
+        console.log('el cliente con id:',id ,' fue eliminado') 
     }
 }

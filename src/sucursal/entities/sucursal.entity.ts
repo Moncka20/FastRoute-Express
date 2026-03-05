@@ -16,6 +16,6 @@ export class SucursalEntity {
   @Column()
   ciudad: string;
 
-  @OneToMany(() => EnvioEntity, (envio) => envio.sucursalOrigen)
+  @OneToMany(() => EnvioEntity, (envio) => envio.envio)
   envios: EnvioEntity[];
 }

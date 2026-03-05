@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EnvioEntity } from './entities/envio.entity';
 import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
 
 @Injectable()
 export class EnvioService {
+
+  constructor(
+    @InjectRepository(EnvioEntity)
+    private envioRepository: Repository<EnvioEntity>,
+  ) {}
+
   create(createEnvioDto: CreateEnvioDto) {
-    return 'This action adds a new envio';
+    const envio = this.envioRepository.create(createEnvioDto);
+    return this.envioRepository.save(envio);
   }
 
   findAll() {
-    return `This action returns all envio`;
+    return this.envioRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} envio`;
+    return this.envioRepository.findOneBy({ id });
   }
 
   update(id: number, updateEnvioDto: UpdateEnvioDto) {
-    return `This action updates a #${id} envio`;
+    return this.envioRepository.update(id, updateEnvioDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} envio`;
+    return this.envioRepository.delete(id);
   }
 }
