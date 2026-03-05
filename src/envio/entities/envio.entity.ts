@@ -24,6 +24,9 @@ export class EnvioEntity {
   fecha_creacion: Date;
 
   @Column('decimal', { default: 0 })
+  peso: number;
+
+  @Column('decimal', { default: 0 })
   costo_total: number;
 
   @ManyToOne(() => ClienteEntity, cliente => cliente.envios)

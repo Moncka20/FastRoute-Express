@@ -4,22 +4,75 @@ import { Repository } from 'typeorm';
 import { EnvioEntity } from './entities/envio.entity';
 import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
+import { ClienteEntity } from '../cliente/entities/cliente.entity';
+import { ConductorEntity } from '../conductor/entities/conductor.entity';
+import { SucursalEntity } from '../sucursal/entities/sucursal.entity';
+import { PaqueteEntity } from '../paquete/entities/paquete.entity';
 
 @Injectable()
 export class EnvioService {
 
+  private readonly TARIFA_POR_KILO = 5000;
+
   constructor(
     @InjectRepository(EnvioEntity)
     private envioRepository: Repository<EnvioEntity>,
+    @InjectRepository(ClienteEntity)
+    private clienteRepository: Repository<ClienteEntity>,
+    @InjectRepository(ConductorEntity)
+    private conductorRepository: Repository<ConductorEntity>,
+    @InjectRepository(SucursalEntity)
+    private sucursalRepository: Repository<SucursalEntity>,
+    @InjectRepository(PaqueteEntity)
+    private paqueteRepository: Repository<PaqueteEntity>,
   ) {}
 
   async create(createEnvioDto: CreateEnvioDto): Promise<EnvioEntity> {
+
+    const cliente = await this.clienteRepository.findOneBy({ id: createEnvioDto.clienteId });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente con id ${createEnvioDto.clienteId} no encontrado`);
+    }
+
+    const conductor = await this.conductorRepository.findOneBy({ id: createEnvioDto.conductorId });
+    if (!conductor) {
+      throw new NotFoundException(`Conductor con id ${createEnvioDto.conductorId} no encontrado`);
+    }
+
+    const sucursal = await this.sucursalRepository.findOneBy({ id: createEnvioDto.sucursalId });
+    if (!sucursal) {
+      throw new NotFoundException(`Sucursal con id ${createEnvioDto.sucursalId} no encontrada`);
+    }
+
+    const pesoTotal = (createEnvioDto.paquetes || []).reduce((total, paquete) => {
+      return total + Number(paquete.peso || 0);
+    }, 0);
+
+    const costoTotal = pesoTotal * this.TARIFA_POR_KILO;
+
     const envio = this.envioRepository.create({
-      costo_total: createEnvioDto.costoTotal,
-      fecha_creacion: createEnvioDto.fechaCreacion,
+      peso: pesoTotal,
+      costo_total: costoTotal,
+      fecha_creacion: createEnvioDto.fechaCreacion || new Date(),
+      cliente,
+      conductor,
+      sucursal,
     });
 
-    return this.envioRepository.save(envio);
+    const envioGuardado = await this.envioRepository.save(envio);
+
+    const paquetes = (createEnvioDto.paquetes || []).map((paquete) => {
+      return this.paqueteRepository.create({
+        peso: paquete.peso,
+        envio: envioGuardado,
+      });
+    });
+
+    if (paquetes.length > 0) {
+      await this.paqueteRepository.save(paquetes);
+    }
+
+    return this.detalles(envioGuardado.id);
   }
   async findAll(): Promise<EnvioEntity[]> {
     return await this.envioRepository.find();
@@ -40,5 +93,15 @@ export class EnvioService {
   }
   async remove(id: number): Promise<void> {
     await this.envioRepository.delete(id);
+  }
+  async detalles(id: number): Promise<EnvioEntity> {
+    const envio = await this.envioRepository.findOne({
+      where: { id },
+      relations: ['cliente', 'conductor', 'sucursal', 'paquetes'],
+    });
+    if (!envio) {
+      throw new NotFoundException(`Envio con id ${id} no encontrado`);
+    }
+    return envio;
   }
 }

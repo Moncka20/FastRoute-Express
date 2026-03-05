@@ -4,7 +4,7 @@ import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
 
 @Controller('envios')
-export class envioController {
+export class EnvioController {
 
   constructor(private readonly envioService: EnvioService) {}
 
@@ -34,5 +34,9 @@ export class envioController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.envioService.remove(id);
+  }
+  @Get(':id/detalles')
+  detalles(@Param('id') id: number) {
+    return this.envioService.detalles(id);
   }
 }

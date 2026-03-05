@@ -1,4 +1,11 @@
+export class CreateEnvioPaqueteDto {
+    peso: number;
+}
+
 export class CreateEnvioDto {
-    costoTotal: number;
-    fechaCreacion: Date;
+    clienteId: number;
+    conductorId: number;
+    sucursalId: number;
+    fechaCreacion?: Date;
+    paquetes: CreateEnvioPaqueteDto[];
 }
