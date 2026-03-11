@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { ConductorService } from './conductor.service';
 import { CreateConductorDto } from './dto/create-conductor.dto';
 import { UpdateConductorDto } from './dto/update-conductor.dto';
@@ -24,6 +24,7 @@ export class ConductorController {
   }
 
   @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updateConductorDto: UpdateConductorDto,

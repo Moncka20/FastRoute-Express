@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { PaqueteService } from './paquete.service';
 import { CreatePaqueteDto } from './dto/create-paquete.dto';
 import { UpdatePaqueteDto } from './dto/update-paquete.dto';
@@ -24,6 +24,7 @@ export class PaqueteController {
   }
 
   @Patch(':id')
+  @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() updatePaqueteDto: UpdatePaqueteDto,
