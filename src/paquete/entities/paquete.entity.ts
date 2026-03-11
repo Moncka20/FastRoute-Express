@@ -10,6 +10,9 @@ export class PaqueteEntity {
   @Column('decimal')
   peso: number;
 
-  @ManyToOne(() => EnvioEntity, envio => envio.paquetes)
-  envio: EnvioEntity;
+  @ManyToOne(() => EnvioEntity, (envio) => envio.paquetes, {
+  nullable: true,
+  onDelete: 'SET NULL',
+  })
+  envio: EnvioEntity | null;
 }

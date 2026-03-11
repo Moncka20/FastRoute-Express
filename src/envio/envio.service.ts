@@ -109,7 +109,18 @@ export class EnvioService {
     return await this.envioRepository.save(envio);
   }
   async remove(id: number): Promise<void> {
-    await this.envioRepository.delete(id);
+    await this.findOne(id);
+
+    await this.envioRepository.manager.transaction(async (manager) => {
+      await manager
+        .createQueryBuilder()
+        .update(PaqueteEntity)
+        .set({ envio: null })
+        .where('envioId = :id', { id })
+        .execute();
+
+      await manager.getRepository(EnvioEntity).delete(id);
+    });
   }
   async detalles(id: number): Promise<EnvioEntity> {
     const envio = await this.envioRepository.findOne({
