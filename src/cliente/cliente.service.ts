@@ -40,18 +40,16 @@ export class ClientesService {
         return await this.clienteRepository.save(cliente);
     }
 
-    async update(updateClienteDto: UpdateClienteDto): Promise<ClienteEntity>{
-      const cliente = this.clienteRepository.create({
-        nombre: updateClienteDto.nombre,
-        correo: updateClienteDto.correo,
-        telefono: updateClienteDto.telefono,
-      });
-      await this.clienteRepository.update(updateClienteDto.id, cliente);
-      const updatedCliente = await this.clienteRepository.findOneBy({id: updateClienteDto.id});
-      if (!updatedCliente) {
-        throw new NotFoundException(`Cliente con ID ${updateClienteDto.id} no encontrado`);
-      }
-      return updatedCliente;
+        async update(id: number, updateClienteDto: UpdateClienteDto): Promise<ClienteEntity>{
+            const cliente = await this.clienteRepository.findOneBy({ id });
+
+            if (!cliente) {
+                throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
+            }
+
+            Object.assign(cliente, updateClienteDto);
+
+            return await this.clienteRepository.save(cliente);
     }
 
     async delete(id: number): Promise<void> {
