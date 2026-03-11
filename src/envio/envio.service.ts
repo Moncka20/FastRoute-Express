@@ -131,7 +131,7 @@ export class EnvioService {
       await this.envioRepository.query('ALTER TABLE `Envio` AUTO_INCREMENT = 1');
     }
   }
-  async detalles(id: number): Promise<EnvioEntity> {
+  async detalles(id: number): Promise<any> {
     const envio = await this.envioRepository.findOne({
       where: { id },
       relations: ['cliente', 'conductor', 'sucursal', 'paquetes'],
@@ -139,6 +139,31 @@ export class EnvioService {
     if (!envio) {
       throw new NotFoundException(`Envio con id ${id} no encontrado`);
     }
-    return envio;
+
+    const paquetes = envio.paquetes.map((paquete) => {
+      const peso = Number(paquete.peso || 0);
+
+      return {
+        id: paquete.id,
+        peso,
+        costo: peso * this.TARIFA_POR_KILO,
+      };
+    });
+
+    const costoTotal = paquetes.reduce((total, paquete) => total + paquete.costo, 0);
+
+    return {
+      id: envio.id,
+      cliente: {
+        id: envio.cliente.id,
+        nombre: envio.cliente.nombre,
+        correo: envio.cliente.correo,
+        telefono: envio.cliente.telefono,
+      },
+      conductor: envio.conductor.nombre,
+      sucursal_origen: envio.sucursal.nombre,
+      paquetes,
+      costo_total: costoTotal,
+    };
   }
 }
