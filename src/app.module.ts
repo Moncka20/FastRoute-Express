@@ -5,22 +5,23 @@ import { DatabaseModule } from './database/database.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { ConductorModule } from './conductor/conductor.module';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConductorEntity } from './conductor/entities/conductor.entity';
-import { ClienteEntity } from './cliente/entities/cliente.entity';
-import { EnvioEntity } from './envio/entities/envio.entity';
 import { EnvioModule } from './envio/envio.module';
 import { PaqueteModule } from './paquete/paquete.module';
-import { PaqueteEntity } from './paquete/entities/paquete.entity';
 import { SucursalModule } from './sucursal/sucursal.module';
-import { SucursalEntity } from './sucursal/entities/sucursal.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ConductorEntity, ClienteEntity, EnvioEntity, PaqueteEntity, SucursalEntity]),
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    }),DatabaseModule, ClienteModule, ConductorModule, EnvioModule, PaqueteModule, SucursalModule],
+    }),
+    DatabaseModule,
+    ClienteModule,
+    ConductorModule,
+    EnvioModule,
+    PaqueteModule,
+    SucursalModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

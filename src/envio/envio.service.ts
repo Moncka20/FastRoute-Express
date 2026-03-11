@@ -74,6 +74,7 @@ export class EnvioService {
     const envio = this.envioRepository.create({
       peso: pesoTotal,
       costo_total: costoTotal,
+      paqueteIds: paquetes.map((p) => p.id),
       fecha_creacion: createEnvioDto.fechaCreacion || new Date(),
       cliente,
       conductor,
@@ -111,16 +112,24 @@ export class EnvioService {
   async remove(id: number): Promise<void> {
     await this.findOne(id);
 
-    await this.envioRepository.manager.transaction(async (manager) => {
-      await manager
-        .createQueryBuilder()
-        .update(PaqueteEntity)
-        .set({ envio: null })
-        .where('envioId = :id', { id })
-        .execute();
-
-      await manager.getRepository(EnvioEntity).delete(id);
+    const paquetes = await this.paqueteRepository.find({
+      where: { envio: { id } },
     });
+
+    if (paquetes.length > 0) {
+      const paquetesSinEnvio = paquetes.map((paquete) => {
+        paquete.envio = null;
+        return paquete;
+      });
+      await this.paqueteRepository.save(paquetesSinEnvio);
+    }
+
+    await this.envioRepository.delete(id);
+
+    const totalEnvios = await this.envioRepository.count();
+    if (totalEnvios === 0) {
+      await this.envioRepository.query('ALTER TABLE `Envio` AUTO_INCREMENT = 1');
+    }
   }
   async detalles(id: number): Promise<EnvioEntity> {
     const envio = await this.envioRepository.findOne({

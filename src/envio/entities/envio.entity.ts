@@ -29,6 +29,9 @@ export class EnvioEntity {
   @Column('decimal', { default: 0 })
   costo_total: number;
 
+  @Column('json')
+  paqueteIds: number[];
+
   @ManyToOne(() => ClienteEntity, cliente => cliente.envios)
   cliente: ClienteEntity;
 
