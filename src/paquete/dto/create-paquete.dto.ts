@@ -1,5 +1,5 @@
 export class CreatePaqueteDto {
     peso: number;
     descripcion: string;
-    envioId: number;
+    envioId?: number;
 }

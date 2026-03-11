@@ -19,21 +19,25 @@ export class PaqueteService {
 
   async create(createPaqueteDto: CreatePaqueteDto): Promise<PaqueteEntity> {
 
-    if (!createPaqueteDto.peso || !createPaqueteDto.envioId) {
-      throw new Error('Peso y envioId son obligatorios');
+    if (!createPaqueteDto.peso) {
+      throw new Error('Peso es obligatorio');
     }
 
-    const envio = await this.envioRepository.findOneBy({
-      id: createPaqueteDto.envioId,
-    });
+    let envio: EnvioEntity | null = null;
 
-    if (!envio) {
-      throw new NotFoundException('Envio no encontrado');
+    if (createPaqueteDto.envioId) {
+      envio = await this.envioRepository.findOneBy({
+        id: createPaqueteDto.envioId,
+      });
+
+      if (!envio) {
+        throw new NotFoundException('Envio no encontrado');
+      }
     }
 
     const paquete = this.paqueteRepository.create({
       peso: createPaqueteDto.peso,
-      envio: envio,
+      envio: envio || undefined,
     });
 
     return await this.paqueteRepository.save(paquete);

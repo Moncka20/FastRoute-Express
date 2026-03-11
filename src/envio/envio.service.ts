@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { EnvioEntity } from './entities/envio.entity';
 import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
@@ -12,7 +12,7 @@ import { PaqueteEntity } from '../paquete/entities/paquete.entity';
 @Injectable()
 export class EnvioService {
 
-  private readonly TARIFA_POR_KILO = 5000;
+  private readonly TARIFA_POR_KILO = 100;
 
   constructor(
     @InjectRepository(EnvioEntity)
@@ -44,7 +44,28 @@ export class EnvioService {
       throw new NotFoundException(`Sucursal con id ${createEnvioDto.sucursalId} no encontrada`);
     }
 
-    const pesoTotal = (createEnvioDto.paquetes || []).reduce((total, paquete) => {
+    const paqueteIds = createEnvioDto.paqueteIds || [];
+
+    if (paqueteIds.length === 0) {
+      throw new BadRequestException('Debe seleccionar al menos un paquete');
+    }
+
+    const paquetes = await this.paqueteRepository.find({
+      where: { id: In(paqueteIds) },
+      relations: ['envio'],
+    });
+
+    if (paquetes.length !== paqueteIds.length) {
+      throw new NotFoundException('Uno o más paquetes no existen');
+    }
+
+    const paquetesAsignados = paquetes.filter((paquete) => paquete.envio);
+
+    if (paquetesAsignados.length > 0) {
+      throw new BadRequestException('Uno o más paquetes ya están asociados a un envío');
+    }
+
+    const pesoTotal = paquetes.reduce((total, paquete) => {
       return total + Number(paquete.peso || 0);
     }, 0);
 
@@ -61,16 +82,12 @@ export class EnvioService {
 
     const envioGuardado = await this.envioRepository.save(envio);
 
-    const paquetes = (createEnvioDto.paquetes || []).map((paquete) => {
-      return this.paqueteRepository.create({
-        peso: paquete.peso,
-        envio: envioGuardado,
-      });
+    const paquetesActualizados = paquetes.map((paquete) => {
+      paquete.envio = envioGuardado;
+      return paquete;
     });
 
-    if (paquetes.length > 0) {
-      await this.paqueteRepository.save(paquetes);
-    }
+    await this.paqueteRepository.save(paquetesActualizados);
 
     return this.detalles(envioGuardado.id);
   }
